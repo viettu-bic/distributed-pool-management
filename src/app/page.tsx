@@ -1,6 +1,7 @@
 'use client'
 
 import { useAccount, useConnect, useDisconnect } from 'wagmi'
+import TopBar from "@/components/TopBar";
 
 function App() {
   const account = useAccount()
@@ -9,7 +10,9 @@ function App() {
 
   return (
     <>
+      <TopBar/>
       <div>
+
         <h2>Account</h2>
 
         <div>
