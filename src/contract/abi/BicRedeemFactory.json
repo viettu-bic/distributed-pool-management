@@ -1,0 +1,251 @@
+[
+  {
+    "inputs": [],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "previousOwner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "redeem",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "erc20",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "totalAmount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "beneficiaryAddress",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint64",
+        "name": "durationSeconds",
+        "type": "uint64"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint64",
+        "name": "redeemRate",
+        "type": "uint64"
+      }
+    ],
+    "name": "RedeemInitialized",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "erc20",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "totalAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "beneficiaryAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "uint64",
+        "name": "durationSeconds",
+        "type": "uint64"
+      },
+      {
+        "internalType": "uint64",
+        "name": "redeemRate",
+        "type": "uint64"
+      }
+    ],
+    "name": "_getHash",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "bicRedeemImplementation",
+    "outputs": [
+      {
+        "internalType": "contract BicRedeemToken",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "erc20",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "totalAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "beneficiaryAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "uint64",
+        "name": "durationSeconds",
+        "type": "uint64"
+      },
+      {
+        "internalType": "uint64",
+        "name": "redeemRate",
+        "type": "uint64"
+      }
+    ],
+    "name": "computeRedeem",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "erc20",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "totalAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "beneficiaryAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "uint64",
+        "name": "durationSeconds",
+        "type": "uint64"
+      },
+      {
+        "internalType": "uint64",
+        "name": "redeemRate",
+        "type": "uint64"
+      }
+    ],
+    "name": "createRedeem",
+    "outputs": [
+      {
+        "internalType": "contract BicRedeemToken",
+        "name": "ret",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "redeemAddress",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]
