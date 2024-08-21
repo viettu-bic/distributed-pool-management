@@ -8,6 +8,7 @@ import {
     client
 } from "@/contract/contractConfig";
 import {useAccount, useWalletClient} from 'wagmi'
+import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react'
 
 const distributedPlan = [
     {
@@ -109,6 +110,9 @@ export default function DistributedPanel() {
         sync().catch(console.error)
     }, [])
     const { data: walletClient } = useWalletClient();
+    const [isOpenDetailModal, setIsOpenDetailModal] = useState(false)
+    const [poolDetail, setPoolDetail] = useState(null)
+    const [isFetchingDetail, setIsFetchingDetail] = useState(false)
 
     async function sync() {
         const bicRedeemTokenImpl = await client.readContract({...BicRedeemFactoryConfig, functionName: 'bicRedeemImplementation'})
@@ -197,7 +201,53 @@ export default function DistributedPanel() {
         setPlan(plan);
     }
 
+    async function fetchDetail(poolInfo) {
+        console.log('start fetch detail')
+        setIsFetchingDetail(true)
+        let detail: any = {}
+        if(poolInfo.lockAddress && poolInfo.unlockAddress) {
+            if(!poolInfo.isDeployed) {
+                detail.type = 3
+                detail.name = poolInfo.pool
+                detail.totalAmount = poolInfo.total
+                detail.rate = poolInfo.speedRate
+                detail.startTime = process.env.NEXT_PUBLIC_START_POOL_TIME
+                detail.beneficiary = poolInfo.unlockAddress
+            } else {
+                detail.type = 0
+                detail.name = poolInfo.pool
+                detail.totalAmount = await client.readContract({...BicRedeemTokenConfig(poolInfo.lockAddress), functionName: 'redeemTotalAmount'})
+                detail.rate = await client.readContract({...BicRedeemTokenConfig(poolInfo.lockAddress), functionName: 'redeemRate'})
+                detail.startTime = await client.readContract({...BicRedeemTokenConfig(poolInfo.lockAddress), functionName: 'start'})
+                detail.endTime = await client.readContract({...BicRedeemTokenConfig(poolInfo.lockAddress), functionName: 'end'})
+                detail.beneficiary = await client.readContract({...BicRedeemTokenConfig(poolInfo.lockAddress), functionName: 'beneficiary'})
+                detail.redeemTime = await client.readContract({...BicRedeemTokenConfig(poolInfo.lockAddress), functionName: 'lastAtCurrentStack'})
+                detail.totalRedeemTime = await client.readContract({...BicRedeemTokenConfig(poolInfo.lockAddress), functionName: 'maxRewardStacks'})
+                detail.currentRedeemTime = await client.readContract({...BicRedeemTokenConfig(poolInfo.lockAddress), functionName: 'currentRewardStacks'})
+                detail.amountPerRedeem = await client.readContract({...BicRedeemTokenConfig(poolInfo.lockAddress), functionName: 'amountPerDuration'})
+                const releasable = await client.readContract({...BicRedeemTokenConfig(poolInfo.lockAddress), functionName: 'releasable'})
+                detail.waitingAmount = releasable[0]
+                detail.waitingRedeemTime = releasable[1]
+            }
+        } else if (poolInfo.lockAddress) {
+            detail.type = 1
+            detail.name = poolInfo.pool
+            detail.note = "All amount in this pool is for Founding community only."
+        } else {
+            detail.type = 2
+            detail.name = poolInfo.pool
+            detail.swapPool1= 'BIC/ETH'
+            detail.swapPool2= 'BIC/USDT'
+        }
+        setPoolDetail(detail)
+        console.log('is open detail modal: ', isOpenDetailModal)
+        setIsOpenDetailModal(!isOpenDetailModal)
+        setIsFetchingDetail(false)
+        console.log('end fetch detail')
+    }
+
     return (
+        <>
         <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
             <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
@@ -210,7 +260,8 @@ export default function DistributedPanel() {
             </thead>
             <tbody>
             {plan.map(e => (
-                <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600" key={e.pool}>
+                <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+                    key={e.pool}>
                     <td className="px-6 py-4">{e.id}</td>
                     <td className="px-6 py-4">{e.pool}</td>
                     <td className="px-6 py-4">
@@ -228,11 +279,81 @@ export default function DistributedPanel() {
                     }</td>
                     <td className="px-6 py-4">{formatEther(e.total)}</td>
                     <td className="px-6 py-4">
-                        <button className="btn-primary">Detail</button>
+                        <button className="btn-primary" onClick={() => fetchDetail(e)}>Detail</button>
                     </td>
                 </tr>
             ))}
             </tbody>
+
         </table>
-    )
+            <Dialog open={isOpenDetailModal} onClose={setIsOpenDetailModal} className="relative z-10">
+                <DialogBackdrop
+                    transition
+                    className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in"
+                />
+
+                <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
+                    <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+                        <DialogPanel
+                            transition
+                            className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:my-8 sm:w-full sm:max-w-lg data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95"
+                        >
+                            <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                                <div className="sm:flex sm:items-start">
+                                    <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                                        <DialogTitle as="h3" className="text-base font-semibold leading-6 text-gray-900">
+                                            {poolDetail?.name}
+                                        </DialogTitle>
+                                        {isFetchingDetail && <div className="mt-2">
+                                            <p className="text-sm text-gray-500">Fetching data ...</p>
+                                        </div>}
+                                        {poolDetail?.note && <div className="mt-2">
+                                            <p className="text-sm text-gray-500">
+                                                {poolDetail.note}
+                                            </p>
+                                        </div>}
+                                        {poolDetail?.type == 2 && <div className="mt-2">
+                                            <a href="#" className="lnk-primary">{poolDetail.swapPool1}</a>
+                                            <br/>
+                                            <a href="#" className="lnk-primary">{poolDetail.swapPool2}</a>
+                                        </div>}
+                                        {(poolDetail?.type == 3 || poolDetail?.type == 0 ) && <div className="mt-2">
+                                            {Object.keys(poolDetail).map((key) => {
+                                                console.log('key: ', key)
+                                                if(key == 'type' || key == 'name') return
+                                                return (
+                                                    <div key={key} className="flex justify-between">
+                                                        <span>{key}:</span>
+                                                        <span>{ key === 'startTime' || key === 'endTime' || key === 'redeemTime' ? new Date(Number(poolDetail[key]) * 1000).toLocaleString() :
+                                                            key === 'totalAmount' || key === 'amountPerRedeem' || key === 'waitingAmount' ? formatEther(poolDetail[key]) :
+                                                                key === 'rate' ? `${Number(poolDetail[key]) / 10_000 * 100}%` :
+                                                                    key === 'beneficiary' ? <a className="lnk-primary" target="_blank" rel="noopener noreferrer"
+                                                                                               href={"https://sepolia.etherscan.io/address/" + poolDetail[key]}>{poolDetail[key]}</a> :
+                                                                        key === 'totalRedeemTime' || key === 'currentRedeemTime' || key === 'waitingRedeemTime' ? `${poolDetail[key]}/${poolDetail.totalRedeemTime}` :
+                                                                                    poolDetail[key]
+                                                        }</span>
+                                                        <br/>
+                                                    </div>
+                                                )
+                                            })}
+                                        </div>}
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                                <button
+                                    type="button"
+                                    data-autofocus
+                                    onClick={() => setIsOpenDetailModal(false)}
+                                    className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        </DialogPanel>
+                    </div>
+                </div>
+            </Dialog>
+    </>
+)
 }
