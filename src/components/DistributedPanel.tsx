@@ -116,7 +116,6 @@ export default function DistributedPanel() {
 
     async function sync() {
         const bicRedeemTokenImpl = await client.readContract({...BicRedeemFactoryConfig, functionName: 'bicRedeemImplementation'})
-        console.log('bicRedeemTokenImpl: ', bicRedeemTokenImpl)
         for (let i = 0; i < distributedPlan.length; i++) {
             const pool = distributedPlan[i]
             if(pool.unlockAddress) {
@@ -126,18 +125,14 @@ export default function DistributedPanel() {
                     args: [bicRedeemTokenImpl, pad(pool.unlockAddress, { size: 32 }) ],
                     account: process.env.NEXT_PUBLIC_SETUP_ADDRESS
                 })
-                console.log('lockAddress: ', lockAddress)
                 pool.lockAddress = lockAddress
                 const lockCode = await client.getCode({address: lockAddress})
-                console.log('i: ', i)
-                console.log('lockCode: ', lockCode)
                 if(lockCode) {
                     pool.isDeployed = true
                 }
             }
             if(pool.isDeployed && pool.lockAddress) {
                 pool.lockAmount = await client.readContract({...BicTokenPaymasterConfig, functionName: 'balanceOf', args: [pool.lockAddress]})
-                console.log('pool.lockAmount: ', pool.lockAmount)
             }
             // const lockAddress = await BicRedeemFactory.bicRedeemFactory.getLockAddress(pool.id)
         }
@@ -164,7 +159,6 @@ export default function DistributedPanel() {
         }
 
         const bicBalance = await client.readContract({...BicTokenPaymasterConfig, functionName: 'balanceOf', args: [account.address]})
-        console.log('bicBalance: ', bicBalance)
         // if(bicBalance < pool.total) {
         //     alert('Insufficient BIC balance')
         //     return
@@ -172,7 +166,6 @@ export default function DistributedPanel() {
         const bicRedeemTokenImpl = await client.readContract({...BicRedeemFactoryConfig, functionName: 'bicRedeemImplementation'})
         const startUnlockTime = process.env.NEXT_PUBLIC_START_POOL_TIME
         const duration = BigInt(60*60*24*7); // 1 week
-        console.log('predictLockAddress: ', predictLockAddress)
         const initCode = encodeFunctionData({
             abi: BicRedeemTokenConfig(pool.lockAddress).abi,
             functionName: 'initialize',
@@ -185,24 +178,25 @@ export default function DistributedPanel() {
                 pool.speedRate
             ]
         });
-        console.log('initCode: ', initCode)
         await walletClient.writeContract({
             ...BicFactoryConfig,
             functionName: 'deployProxyByImplementation',
             args: [bicRedeemTokenImpl, initCode, pad(pool.unlockAddress, { size: 32 }) ],
         })
-        console.log('pool.lockAddress: ', pool.lockAddress)
         await walletClient.writeContract({
             ...BicTokenPaymasterConfig,
             functionName: 'transfer',
             args: [pool.lockAddress, pool.total]
         })
         pool.isDeployed = true
-        setPlan(plan);
+        await sync()
+        setIsOpenDetailModal(false)
     }
 
     async function fetchDetail(poolInfo) {
         console.log('start fetch detail')
+        setIsOpenDetailModal(true)
+
         setIsFetchingDetail(true)
         let detail: any = {}
         detail.poolId = poolInfo.id
@@ -239,14 +233,12 @@ export default function DistributedPanel() {
             detail.swapPool2= 'BIC/USDT'
         }
         setPoolDetail(detail)
-        console.log('is open detail modal: ', isOpenDetailModal)
-        setIsOpenDetailModal(!isOpenDetailModal)
         setIsFetchingDetail(false)
         console.log('end fetch detail')
     }
 
     async function redeemPool(poolId) {
-        const pool = plan.find(e => e.lockAddress === poolId)
+        const pool = plan.find(e => e.id === poolId)
         if(!pool) {
             console.error('No pool found');
             return
@@ -339,7 +331,6 @@ export default function DistributedPanel() {
                                         </div>}
                                         {(poolDetail?.type == 3 || poolDetail?.type == 0 ) && <div className="mt-2">
                                             {Object.keys(poolDetail).map((key) => {
-                                                console.log('key: ', key)
                                                 if(key == 'type' || key == 'name') return
                                                 return (
                                                     <div key={key} className="flex justify-between">
