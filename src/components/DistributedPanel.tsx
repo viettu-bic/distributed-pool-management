@@ -104,6 +104,7 @@ const distributedPlan = [
 ]
 
 export default function DistributedPanel() {
+    const duration = BigInt(60*60*24*7); // 1 week
     const [plan, setPlan] = useState(distributedPlan)
     const account = useAccount()
     useEffect(() => {
@@ -134,9 +135,8 @@ export default function DistributedPanel() {
             if(pool.isDeployed && pool.lockAddress) {
                 pool.lockAmount = await client.readContract({...BicTokenPaymasterConfig, functionName: 'balanceOf', args: [pool.lockAddress]})
             }
-            // const lockAddress = await BicRedeemFactory.bicRedeemFactory.getLockAddress(pool.id)
+            setPlan([...distributedPlan])
         }
-        setPlan([...distributedPlan])
     }
 
     async function createLockPool(poolId) {
@@ -165,7 +165,6 @@ export default function DistributedPanel() {
         // }
         const bicRedeemTokenImpl = await client.readContract({...BicRedeemFactoryConfig, functionName: 'bicRedeemImplementation'})
         const startUnlockTime = process.env.NEXT_PUBLIC_START_POOL_TIME
-        const duration = BigInt(60*60*24*7); // 1 week
         const initCode = encodeFunctionData({
             abi: BicRedeemTokenConfig(pool.lockAddress).abi,
             functionName: 'initialize',
@@ -208,6 +207,7 @@ export default function DistributedPanel() {
                 detail.totalAmount = poolInfo.total
                 detail.rate = poolInfo.speedRate
                 detail.startTime = process.env.NEXT_PUBLIC_START_POOL_TIME
+                detail.endTime = Number(process.env.NEXT_PUBLIC_START_POOL_TIME) + 10000/Number(poolInfo.speedRate) * Number(duration)
                 detail.beneficiary = poolInfo.unlockAddress
             } else {
                 detail.type = 0
@@ -369,7 +369,10 @@ export default function DistributedPanel() {
                                 <button
                                     type="button"
                                     data-autofocus
-                                    onClick={() => setIsOpenDetailModal(false)}
+                                    onClick={() => {
+                                        setIsOpenDetailModal(false)
+                                        setPoolDetail(null)
+                                    }}
                                     className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
                                 >
                                     Cancel
