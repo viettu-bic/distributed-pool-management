@@ -205,17 +205,18 @@ export default function DistributedPanel() {
         console.log('start fetch detail')
         setIsFetchingDetail(true)
         let detail: any = {}
+        detail.poolId = poolInfo.id
+        detail.name = poolInfo.pool
         if(poolInfo.lockAddress && poolInfo.unlockAddress) {
+            detail.lockAddress = poolInfo.lockAddress
             if(!poolInfo.isDeployed) {
                 detail.type = 3
-                detail.name = poolInfo.pool
                 detail.totalAmount = poolInfo.total
                 detail.rate = poolInfo.speedRate
                 detail.startTime = process.env.NEXT_PUBLIC_START_POOL_TIME
                 detail.beneficiary = poolInfo.unlockAddress
             } else {
                 detail.type = 0
-                detail.name = poolInfo.pool
                 detail.totalAmount = await client.readContract({...BicRedeemTokenConfig(poolInfo.lockAddress), functionName: 'redeemTotalAmount'})
                 detail.rate = await client.readContract({...BicRedeemTokenConfig(poolInfo.lockAddress), functionName: 'redeemRate'})
                 detail.startTime = await client.readContract({...BicRedeemTokenConfig(poolInfo.lockAddress), functionName: 'start'})
@@ -231,11 +232,9 @@ export default function DistributedPanel() {
             }
         } else if (poolInfo.lockAddress) {
             detail.type = 1
-            detail.name = poolInfo.pool
             detail.note = "All amount in this pool is for Founding community only."
         } else {
             detail.type = 2
-            detail.name = poolInfo.pool
             detail.swapPool1= 'BIC/ETH'
             detail.swapPool2= 'BIC/USDT'
         }
@@ -244,6 +243,27 @@ export default function DistributedPanel() {
         setIsOpenDetailModal(!isOpenDetailModal)
         setIsFetchingDetail(false)
         console.log('end fetch detail')
+    }
+
+    async function redeemPool(poolId) {
+        const pool = plan.find(e => e.lockAddress === poolId)
+        if(!pool) {
+            console.error('No pool found');
+            return
+        }
+        if(!account.address) {
+            alert('Please connect wallet')
+            return
+        }
+        if (!walletClient) {
+            console.error('No wallet client found');
+            return;
+        }
+        await walletClient.writeContract({
+            ...BicRedeemTokenConfig(pool.lockAddress),
+            functionName: 'release'
+        })
+        await fetchDetail(pool)
     }
 
     return (
@@ -327,7 +347,7 @@ export default function DistributedPanel() {
                                                         <span>{ key === 'startTime' || key === 'endTime' || key === 'redeemTime' ? new Date(Number(poolDetail[key]) * 1000).toLocaleString() :
                                                             key === 'totalAmount' || key === 'amountPerRedeem' || key === 'waitingAmount' ? formatEther(poolDetail[key]) :
                                                                 key === 'rate' ? `${Number(poolDetail[key]) / 10_000 * 100}%` :
-                                                                    key === 'beneficiary' ? <a className="lnk-primary" target="_blank" rel="noopener noreferrer"
+                                                                    key === 'beneficiary' || key === 'lockAddress' ? <a className="lnk-primary" target="_blank" rel="noopener noreferrer"
                                                                                                href={"https://sepolia.etherscan.io/address/" + poolDetail[key]}>{poolDetail[key]}</a> :
                                                                         key === 'totalRedeemTime' || key === 'currentRedeemTime' || key === 'waitingRedeemTime' ? `${poolDetail[key]}/${poolDetail.totalRedeemTime}` :
                                                                                     poolDetail[key]
@@ -341,6 +361,20 @@ export default function DistributedPanel() {
                                 </div>
                             </div>
                             <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                                {poolDetail?.type == 3 && <button
+                                    type="button"
+                                    onClick={() => createLockPool(poolDetail.poolId)}
+                                    className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
+                                >
+                                    Create pool
+                                </button>}
+                                {poolDetail?.type == 0 && poolDetail?.waitingRedeemTime > 0 && <button
+                                    type="button"
+                                    onClick={() => redeemPool(poolDetail.poolId)}
+                                    className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
+                                >
+                                    Claim redeem
+                                </button>}
                                 <button
                                     type="button"
                                     data-autofocus
@@ -354,6 +388,6 @@ export default function DistributedPanel() {
                     </div>
                 </div>
             </Dialog>
-    </>
-)
+        </>
+    )
 }
