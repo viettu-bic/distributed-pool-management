@@ -13,4 +13,28 @@
     .lnk-primary {
         @apply font-medium text-blue-600 underline dark:text-blue-500 hover:no-underline;
     }
+
+    .side-bar-tab {
+        @apply flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700;
+    }
+
+    .card-admin {
+        @apply w-full p-4 text-center bg-white border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700
+    }
+
+    .card-title {
+        @apply mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white
+    }
+
+    .form-label {
+        @apply block mb-2 text-sm font-medium text-gray-900 dark:text-white
+    }
+
+    .form-input {
+        @apply bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500
+    }
+
+    .form-explain {
+        @apply mt-2 text-sm text-gray-500 dark:text-gray-400
+    }
 }

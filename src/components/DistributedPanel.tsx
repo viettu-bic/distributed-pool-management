@@ -1,3 +1,5 @@
+'use client'
+
 import {encodeFunctionData, formatEther, pad, parseEther} from "viem";
 import {useEffect, useState} from "react";
 import {

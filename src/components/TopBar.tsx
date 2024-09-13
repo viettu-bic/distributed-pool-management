@@ -1,3 +1,5 @@
+'use client'
+
 import {useState} from "react";
 import {useAccount, useConnect, useDisconnect} from "wagmi";
 import {getChain} from "@/util/util";
