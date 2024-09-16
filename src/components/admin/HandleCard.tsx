@@ -80,6 +80,10 @@ export default function HandleCard() {
     });
   };
 
+  const handleError = (error: any) => {
+    alert(error?.message || "Unknown error");
+  };
+
   const onUpdateOwner = async () => {
     try {
       const contract = handleControllerContract();
@@ -96,6 +100,7 @@ export default function HandleCard() {
       // Handle success
       console.log("🚀 ~ onUpdateOwner ~ tx:", tx);
       fetchConfig();
+      alert("Owner updated successfully");
     } catch (error) {
       // Handle error
       console.log("🚀 ~ onUpdateOwner ~ error:", error);
@@ -118,9 +123,11 @@ export default function HandleCard() {
       // Handle success
       console.log("🚀 ~ onUpdateCollector ~ tx:", tx);
       fetchConfig();
+      alert("Collector updated successfully");
     } catch (error) {
       // Handle error
       console.log("🚀 ~ onUpdateCollector ~ error:", error);
+      handleError(error);
     }
   };
 
@@ -146,9 +153,11 @@ export default function HandleCard() {
       // Handle success
       console.log("🚀 ~ onUpdateCollector ~ tx:", tx);
       fetchConfig();
+      alert("Auction config updated successfully");
     } catch (error) {
       // Handle error
       console.log("🚀 ~ onUpdateCollector ~ error:", error);
+      handleError(error);
     }
   };
 
@@ -168,9 +177,11 @@ export default function HandleCard() {
       // Handle success
       console.log("🚀 ~ onUpdateMarketplace ~ tx:", tx);
       fetchConfig();
+      alert("Marketplace updated successfully");
     } catch (error) {
       // Handle error
       console.log("🚀 ~ onUpdateMarketplace ~ error:", error);
+      handleError(error);
     }
   };
 
@@ -190,9 +201,11 @@ export default function HandleCard() {
       // Handle success
       console.log("🚀 ~ onUpdateForwarder ~ tx:", tx);
       fetchConfig();
+      alert("Forwarder updated successfully");
     } catch (error) {
       // Handle error
       console.log("🚀 ~ onUpdateForwarder ~ error:", error);
+      handleError(error);
     }
   };
 
@@ -212,9 +225,11 @@ export default function HandleCard() {
       // Handle success
       console.log("🚀 ~ onUpdateVerifier ~ tx:", tx);
       fetchConfig();
+      alert("Verifier updated successfully");
     } catch (error) {
       // Handle error
       console.log("🚀 ~ onUpdateVerifier ~ error:", error);
+      handleError(error);
     }
   };
 
