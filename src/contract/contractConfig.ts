@@ -24,7 +24,7 @@ export const BicRedeemTokenConfig = (address: string) => ({
 })
 
 export const BicTokenPaymasterConfig = {
-    address: process.env.NEXT_PUBLIC_BIC_TOKEN_PAYMASTER_ADDRESS,
+    address: process.env.NEXT_PUBLIC_BIC_TOKEN_PAYMASTER_ADDRESS as `0x${string}`,
     abi: BicTokenPaymaster
 }
 
