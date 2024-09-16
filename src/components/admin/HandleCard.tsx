@@ -25,6 +25,15 @@ export default function HandleCard() {
   const [verifier, setVerifier] = useState<string>();
   const [marketplace, setMarketplace] = useState<string>();
   const [collector, setCollector] = useState<string>();
+  const [auctionConfig, setAuctionConfig] = useState<{
+    buyoutBidAmount: string;
+    timeBufferInSeconds: string;
+    bidBufferBps: string;
+  }>({
+    bidBufferBps: "0",
+    timeBufferInSeconds: "0",
+    buyoutBidAmount: "0",
+  });
 
   const handleControllerContract = useCallback(() => {
     if (!walletClient) return;
@@ -63,6 +72,12 @@ export default function HandleCard() {
     setVerifier(verifier as string);
     setMarketplace(marketplace as string);
     setCollector(collector as string);
+
+    setAuctionConfig({
+      buyoutBidAmount: (auctionConfig as any)[0]?.toString(),
+      timeBufferInSeconds: (auctionConfig as any)[1]?.toString(),
+      bidBufferBps: (auctionConfig as any)[2]?.toString(),
+    });
   };
 
   const onUpdateOwner = async () => {
@@ -99,6 +114,34 @@ export default function HandleCard() {
         return;
       }
       const tx = await contract.write.setCollector([collector]);
+
+      // Handle success
+      console.log("🚀 ~ onUpdateCollector ~ tx:", tx);
+      fetchConfig();
+    } catch (error) {
+      // Handle error
+      console.log("🚀 ~ onUpdateCollector ~ error:", error);
+    }
+  };
+
+  const onUpdateAuctionConfig = async () => {
+    try {
+      const contract = handleControllerContract();
+      if (!contract) {
+        // Handle notification
+        return;
+      }
+      if (!owner) {
+        // Handle notification
+        return;
+      }
+      const tx = await contract.write.setAuctionMarketplaceConfig([
+        [
+          auctionConfig?.buyoutBidAmount,
+          auctionConfig?.timeBufferInSeconds,
+          auctionConfig?.bidBufferBps,
+        ],
+      ]);
 
       // Handle success
       console.log("🚀 ~ onUpdateCollector ~ tx:", tx);
@@ -186,7 +229,6 @@ export default function HandleCard() {
       <div className="mb-5">
         <label className="form-label">Owner</label>
         <input
-          type="email"
           className="form-input"
           value={owner}
           onChange={(e) => {
@@ -200,7 +242,6 @@ export default function HandleCard() {
       <div className="mb-5">
         <label className="form-label">Verifier</label>
         <input
-          type="email"
           className="form-input"
           value={verifier}
           onChange={(e) => {
@@ -214,7 +255,6 @@ export default function HandleCard() {
       <div className="mb-5">
         <label className="form-label">Forwarder</label>
         <input
-          type="email"
           className="form-input"
           value={forwarder}
           onChange={(e) => {
@@ -228,7 +268,6 @@ export default function HandleCard() {
       <div className="mb-5">
         <label className="form-label">Marketplace</label>
         <input
-          type="email"
           className="form-input"
           value={marketplace}
           onChange={(e) => {
@@ -242,7 +281,6 @@ export default function HandleCard() {
       <div className="mb-5">
         <label className="form-label">Collector</label>
         <input
-          type="email"
           className="form-input"
           value={collector}
           onChange={(e) => {
@@ -257,19 +295,49 @@ export default function HandleCard() {
         <label className="form-label">Marketplace auction config</label>
         <div className="grid grid-cols-5 grid-rows-5 gap-4">
           <div className="col-span-5 row-span-3">
-            <label className="form-label">BuyoutBidAmount</label>
-            <input type="email" className="form-input" />
+            <label className="form-label">Buyout Bid Amount</label>
+            <input
+              type="number"
+              className="form-input"
+              value={auctionConfig?.buyoutBidAmount}
+              onChange={(e) => {
+                setAuctionConfig({
+                  ...auctionConfig,
+                  buyoutBidAmount: e.target.value,
+                });
+              }}
+            />
           </div>
           <div className="col-span-5 row-span-3">
-            <label className="form-label">BuyoutBidAmount</label>
-            <input type="email" className="form-input" />
+            <label className="form-label">Time Buffer In Seconds</label>
+            <input
+              type="number"
+              className="form-input"
+              value={auctionConfig?.timeBufferInSeconds}
+              onChange={(e) => {
+                setAuctionConfig({
+                  ...auctionConfig,
+                  timeBufferInSeconds: e.target.value,
+                });
+              }}
+            />
           </div>
           <div className="col-span-5 row-span-3">
-            <label className="form-label">BuyoutBidAmount</label>
-            <input type="email" className="form-input" />
+            <label className="form-label">Bid buffer Basic point</label>
+            <input
+              type="number"
+              className="form-input"
+              value={auctionConfig?.bidBufferBps}
+              onChange={(e) => {
+                setAuctionConfig({
+                  ...auctionConfig,
+                  bidBufferBps: e.target.value,
+                });
+              }}
+            />
           </div>
         </div>
-        <button className="btn-danger" onClick={onUpdateCollector}>
+        <button className="btn-danger" onClick={onUpdateAuctionConfig}>
           Update auction config
         </button>
       </div>
