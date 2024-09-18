@@ -41,7 +41,7 @@ export const HandleConfig = (address: `0x${string}`) => ({
 
 
 export const client = createPublicClient({
-    chain: sepolia,
+    chain: arbitrumSepolia,
     transport: http()
 })
 
