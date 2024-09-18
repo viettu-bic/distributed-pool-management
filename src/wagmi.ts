@@ -16,7 +16,7 @@ export function getConfig() {
     }),
     ssr: true,
     transports: {
-      [sepolia.id]: http(),
+      // [sepolia.id]: http(),
       [arbitrumSepolia.id]: http(),
     },
   })

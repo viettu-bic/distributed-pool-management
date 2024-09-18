@@ -161,10 +161,10 @@ export default function DistributedPanel() {
         }
 
         const bicBalance = await client.readContract({...BicTokenPaymasterConfig, functionName: 'balanceOf', args: [account.address]})
-        // if(bicBalance < pool.total) {
-        //     alert('Insufficient BIC balance')
-        //     return
-        // }
+        if(bicBalance < pool.total) {
+            alert('Insufficient BIC balance')
+            return
+        }
         const bicRedeemTokenImpl = await client.readContract({...BicRedeemFactoryConfig, functionName: 'bicRedeemImplementation'})
         const startUnlockTime = process.env.NEXT_PUBLIC_START_POOL_TIME
         const initCode = encodeFunctionData({

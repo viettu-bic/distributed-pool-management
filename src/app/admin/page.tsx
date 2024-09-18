@@ -6,9 +6,11 @@ function Admin() {
 
     return (
         <>
+            <div className="grid grid-cols-2 gap-2">
             <BicCard/>
             <HandleCard />
             <HandleControllerCard/>
+            </div>
         </>
     )
 }

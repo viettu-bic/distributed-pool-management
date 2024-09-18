@@ -9,3 +9,8 @@ export const getChain = (chainId: number) => {
 
     return null;
 }
+
+export const getEtherscanUrl = (address: string) => {
+
+    return `https://sepolia.arbiscan.io/address/${address}`;
+}
