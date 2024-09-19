@@ -15,6 +15,7 @@ export default function BicCard() {
   const [blockAddress, setBlockAddress] = useState<string>();
   const [factory, setFactory] = useState<string>();
   const [deposit, setDeposit] = useState<number>();
+  const [deposited, setDeposited] = useState<number>(0);
     const [stake, setStake] = useState<number>();
 
   const bicContract = useCallback(() => {
@@ -38,15 +39,17 @@ export default function BicCard() {
     const contract = bicContract();
     if (!contract) return;
 
-    const [oracle, owner, paused] = await Promise.all([
+    const [oracle, owner, paused, deposited] = await Promise.all([
       contract.read.oracle(),
       contract.read.owner(),
       contract.read.paused(),
+      contract.read.getDeposit(),
     ]);
 
     setPaused(paused as boolean);
     setOracle(oracle as string);
     setOwner(owner as string);
+    setDeposited(deposited as number);
   };
 
   useEffect(() => {
@@ -95,12 +98,12 @@ export default function BicCard() {
       const tx = await contract.write.transferOwnership([owner]);
 
       // Handle success
-      console.log("🚀 ~ onUpdateOracle ~ tx:", tx);
+      console.log("🚀 ~ onUpdateOwner ~ tx:", tx);
       fetchConfig();
       alert("Oracle updated successfully");
     } catch (error) {
       // Handle error
-      console.log("🚀 ~ onUpdateOracle ~ error:", error);
+      console.log("🚀 ~ onUpdateOwner ~ error:", error);
       handleError(error);
 
     }
@@ -382,7 +385,7 @@ export default function BicCard() {
                    className="form-input"
                    onChange={(e) => setDeposit(e.target.value)}
             />
-            <p className="form-explain">Current: 0</p>
+            <p className="form-explain">Current: {deposited}</p>
           </div>
           <button className="btn-danger" onClick={onDeposit}>
             Deposit
