@@ -104,7 +104,7 @@ const distributedPlan = [
         speedRate: 10n, // 30 / 10_000 = 0.3%
     }
 ]
-
+const scanAddress = 'https://sepolia.arbiscan.io/address/'
 export default function DistributedPanel() {
     const duration = BigInt(60*60*24*7); // 1 week
     const [plan, setPlan] = useState(distributedPlan)
@@ -280,11 +280,11 @@ export default function DistributedPanel() {
                     <td className="px-6 py-4">{e.pool}</td>
                     <td className="px-6 py-4">
                         {e.lockAddress ? <><a className="lnk-primary" target="_blank" rel="noopener noreferrer"
-                                              href={"https://sepolia.etherscan.io/address/" + e.lockAddress}>Locked</a>
+                                              href={scanAddress + e.lockAddress}>Locked</a>
                             <br/>
                             {e.unlockAddress &&
                                 <a className="lnk-primary" target="_blank" rel="noopener noreferrer"
-                                   href={"https://sepolia.etherscan.io/address/" + e.unlockAddress}>Unlocked</a>}</> : 'N/A'}
+                                   href={scanAddress + e.unlockAddress}>Unlocked</a>}</> : 'N/A'}
                     </td>
                     <td className="px-6 py-4">{e.lockAddress ? e.isDeployed ?
                             formatEther(e.lockAmount) :

@@ -4,7 +4,7 @@ import { coinbaseWallet, injected, walletConnect, metaMask, safe } from 'wagmi/c
 
 export function getConfig() {
   return createConfig({
-    chains: [sepolia, arbitrumSepolia],
+    chains: [arbitrumSepolia],
     connectors: [
       injected(),
       coinbaseWallet(),
