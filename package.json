@@ -37,6 +37,5 @@
     "tailwindcss": "^3.4.10",
     "typescript": "^5.4.5",
     "utf-8-validate": "^5.0.2"
-  },
-  "homepage": "https://viettu-bic.github.io/distributed-pool-management/"
+  }
 }

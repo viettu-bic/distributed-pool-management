@@ -1,6 +1,4 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {
-    basePath: '/distributed-pool-management'
-};
+const nextConfig = {};
 
 export default nextConfig;
