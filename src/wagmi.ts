@@ -7,8 +7,8 @@ export function getConfig() {
     chains: [arbitrumSepolia],
     connectors: [
       injected(),
-      coinbaseWallet(),
-      metaMask(),
+      // coinbaseWallet(),
+      // metaMask(),
       walletConnect({ projectId: process.env.NEXT_PUBLIC_WC_PROJECT_ID as string }),
     ],
     storage: createStorage({
