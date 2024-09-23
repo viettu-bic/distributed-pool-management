@@ -6,7 +6,7 @@ export default function SideBar() {
             <div className="h-full px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800">
                 <ul className="space-y-2 font-medium">
                     <li>
-                        <a href="/"
+                        <a href=""
                            className="side-bar-tab">
                             <svg
                                 className="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
@@ -21,7 +21,7 @@ export default function SideBar() {
                         </a>
                     </li>
                     <li>
-                        <a href="/pools"
+                        <a href="pools"
                            className="side-bar-tab">
                             <svg
                                 className="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
@@ -36,7 +36,7 @@ export default function SideBar() {
                         </a>
                     </li>
                     <li>
-                        <a href="/admin"
+                        <a href="admin"
                            className="side-bar-tab">
                             <svg
                                 className="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
