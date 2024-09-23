@@ -38,7 +38,7 @@ const distributedPlan = [
         pool: 'Strategic partner',
         unlockAddress: process.env.NEXT_PUBLIC_POOL_STRATEGIC_PARTNER_UNLOCK_ADDRESS,
         lockAddress: null,
-        lockAmount: 0n,
+        lockAmount: BigInt("0"),
         total: parseEther('150000000'),
         isDeployed: false,
         speedRate: BigInt("30"), // 30 / 10_000 = 0.3%
@@ -161,7 +161,7 @@ export default function DistributedPanel() {
         }
 
         const bicBalance = await client.readContract({...BicTokenPaymasterConfig, functionName: 'balanceOf', args: [account.address]} as any)
-        if(bicBalance < pool.total) {
+        if((bicBalance as bigint) < pool.total) {
             alert('Insufficient BIC balance')
             return
         }
