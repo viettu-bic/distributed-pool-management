@@ -111,7 +111,7 @@ export default function DistributedPanel() {
     const account = useAccount()
     useEffect(() => {
         sync().catch(console.error)
-    }, [])
+    }, [client])
     const { data: walletClient } = useWalletClient();
     const [isOpenDetailModal, setIsOpenDetailModal] = useState(false)
     const [poolDetail, setPoolDetail] = useState(null)
@@ -262,7 +262,11 @@ export default function DistributedPanel() {
 
     return (
         <>
-        <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+            <div className="grid justify-items-end">
+                <button className="btn-primary" onClick={sync}>Refresh</button>
+
+            </div>
+            <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
             <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
                 <th scope="col" className="px-6 py-3">#</th>
